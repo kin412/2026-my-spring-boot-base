@@ -4,3 +4,10 @@ spring:
     username: sa
     password:
     driver-class-name: org.h2.Driver
+
+    #local p6spy
+    p6spy:
+      enable-logging: true
+      # 쿼리 로그 출력 형식 지정 (기본값 외에 사용자 정의 가능)
+      logging: slf4j
+      multiline: true # 쿼리를 한 줄로 보지 않고 예쁘게 여러 줄로 보여줌
