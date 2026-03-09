@@ -5,6 +5,16 @@ spring:
     password:
     driver-class-name: org.h2.Driver
 
+  # 타임리프 캐시 끄기 (운영 시에는 true로 바꿔야 함)
+  thymeleaf:
+    cache: false
+
+  # 정적 리소스(CSS, JS) 캐시 끄기
+  web:
+    resources:
+      chain:
+        cache: false
+
     #local p6spy
     p6spy:
       enable-logging: true

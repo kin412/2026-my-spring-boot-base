@@ -7,7 +7,14 @@
     <title>기본 게시판</title>
 </head>
 <body class="container mt-5">
-    <div><h2 class="mb-5">기본 게시판</h2> 총 <span th:text="${boardList.totalElements}" class="fw-bold">0</span>건 </div>
+    <h2 class="mb-5">기본 게시판</h2>
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            총 <span th:text="${boardList.totalElements}" class="fw-bold text-primary">0</span>건
+        </div>
+        <button type="button" class="btn btn-primary" th:onclick="|location.href='@{/new}'|">새글쓰기</button>
+    </div>
 
     <div class="card mb-4 bg-light">
         <div class="card-body">
@@ -44,7 +51,9 @@
         <tbody>
             <tr th:each="board : ${boardList.content}">
                 <td th:text="${board.id}"/>
-                <td th:text="${board.title}"/>
+                <td>
+                    <a th:href="@{/{id}(id=${board.id})}" th:text="${board.title}">default title</a>
+                </td>
                 <td th:text="${board.author}"/>
                 <td th:text="${board.createdDate}"/>
             </tr>
@@ -96,30 +105,6 @@
     <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 
     <script>
-        // Fetch API
-
-        async function getList(){
-
-        }
-
-        async function deletePost(postId) {
-            if (!confirm("정말로 삭제하시겠습니까?")) return;
-
-            try {
-                const response = await fetch("/api/posts/" + postId, {
-                    method: "DELETE"
-                });
-
-                if (response.ok) {
-                    alert("삭제되었습니다.");
-                    location.reload(); // 성공 시 새로고침
-                } else {
-                    alert("삭제 실패!");
-                }
-            } catch (error) {
-                console.error("에러 발생:", error);
-            }
-        }
 
     </script>
 

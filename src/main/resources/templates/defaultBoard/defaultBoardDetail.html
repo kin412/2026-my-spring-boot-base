@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <meta charset="UTF-8">
+    <title>기본 상세조회</title>
+</head>
+<body class="container mt-5">
+    <div><h2 class="mb-5">기본 상세조회</h2></div>
+
+    <table class="table table-bordered table-hover mt-4">
+        <thead class="table-light"> <tr>
+            <th class="text-center" style="width: 10%;">글번호</th>
+            <th class="text-center" style="width: 50%;">제목</th>
+            <th class="text-center" style="width: 20%;">작성자</th>
+            <th class="text-center" style="width: 20%;">작성일</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td class="text-center" th:text="${board.id}">1</td>
+            <td th:text="${board.title}">게시글 제목입니다.</td>
+            <td class="text-center" th:text="${board.author}">작성자</td>
+            <td class="text-center" th:text="${board.createdDate}">2026-03-09</td>
+        </tr>
+        <tr>
+            <td class="table-light fw-bold text-center">내용</td>
+            <td colspan="3" th:text="${board.content}" style="min-height: 200px; vertical-align: top; white-space: pre-wrap;">
+                여기에 게시글 내용이 출력됩니다.
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="btn-container d-flex justify-content-end mt-4">
+        <button type="button" class="btn btn-primary" th:onclick="|location.href='@{/edit/{id}(id=${board.id})}'|">수정</button>
+        <button type="button" class="btn btn-danger ml-3" th:onclick="|deleteBoard('${board.id}')|">삭제</button>
+        <button type="button" class="btn btn-secondary ml-3" th:onclick="|location.href='/'|">목록으로</button>
+    </div>
+
+
+    <!-- 기본은 읽기,쓰기,수정 - 동기, 삭제 - 비동기  -->
+
+    <!-- 자바스크립트 파일이 큰경우는 브라우저가 먼저읽어버리면 화면이 늦게떠서 이런식으로쓴다함  -->
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+
+    <script>
+        // Fetch API
+        async function deleteBoard(boardId) {
+            if (!confirm("정말로 삭제하시겠습니까?")) return;
+
+            try {
+                const response = await fetch("/delete/" + boardId, {
+                    method: "DELETE"
+                });
+
+                if (response.ok) {
+                    alert("삭제되었습니다.");
+                    //location.reload(); // 성공 시 새로고침
+                    //location.href = "/"; // 뒤로가기 하면 캐시때문에 삭제전 글이 보임
+                    location.replace("/");
+                } else {
+                    alert("삭제 실패!");
+                }
+            } catch (error) {
+                console.error("에러 발생:", error);
+            }
+        }
+
+    </script>
+
+</body>
+</html>

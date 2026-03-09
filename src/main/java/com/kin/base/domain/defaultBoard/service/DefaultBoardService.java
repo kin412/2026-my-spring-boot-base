@@ -66,4 +66,42 @@ public class DefaultBoardService {
 
     }
 
+    public DefaultBoardDto findById(Long id) {
+        DefaultBoard defaultBoard = defaultBoardRepository.findById(id).orElseThrow(
+                () -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+
+        return new DefaultBoardDto(defaultBoard);
+    }
+
+    public Long save(DefaultBoardDto defaultBoardDto) {
+
+        DefaultBoard defaultBoard = DefaultBoard.builder()
+                .content(defaultBoardDto.getContent())
+                .title(defaultBoardDto.getTitle())
+                .author(defaultBoardDto.getAuthor())
+                .build();
+
+        return defaultBoardRepository.save(defaultBoard).getId();
+
+    }
+
+    public Long update(DefaultBoardDto defaultBoardDto) {
+
+        DefaultBoard defaultBoard = DefaultBoard.builder()
+                .id(defaultBoardDto.getId())
+                .content(defaultBoardDto.getContent())
+                .title(defaultBoardDto.getTitle())
+                .author(defaultBoardDto.getAuthor())
+                .build();
+
+        return defaultBoardRepository.save(defaultBoard).getId();
+
+    }
+
+    public void deleteById(Long id) {
+
+        defaultBoardRepository.deleteById(id);
+
+    }
+
 }
