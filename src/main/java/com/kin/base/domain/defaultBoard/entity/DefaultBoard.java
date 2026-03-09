@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter // 조회는 어디서든 필요하므로 사용
-@NoArgsConstructor(access = AccessLevel.PROTECTED) // 함부로 new 생성을 못하게 막음
+@NoArgsConstructor(access = AccessLevel.PROTECTED) // 함부로 new 생성을 못하게 막음. jpa에서 쓰기위해 존재하긴 해야함. 그래서 protected
 public class DefaultBoard extends BaseTimeEntity {
 
     @Id

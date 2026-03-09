@@ -9,7 +9,7 @@ import java.time.temporal.ChronoUnit;
 
 @Getter
 public class DefaultBoardDto {
-
+    
     private Long id;
     private String title;
     private String content;
@@ -18,6 +18,7 @@ public class DefaultBoardDto {
     private String createdDate;
     private String lastModifiedDate;
 
+    //엔티티 받아오는 생성자
     public DefaultBoardDto(DefaultBoard defaultBoard) {
         this.id = defaultBoard.getId();
         this.title = defaultBoard.getTitle();
