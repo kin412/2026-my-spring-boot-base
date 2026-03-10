@@ -13,12 +13,12 @@
         <div>
             총 <span th:text="${boardList.totalElements}" class="fw-bold text-primary">0</span>건
         </div>
-        <button type="button" class="btn btn-primary" th:onclick="|location.href='@{/new}'|">새글쓰기</button>
+        <button type="button" class="btn btn-primary" th:onclick="|location.href='@{/defaultBoard/new}'|">새글쓰기</button>
     </div>
 
     <div class="card mb-4 bg-light">
         <div class="card-body">
-            <form th:action="@{/}" method="get" class="row g-3">
+            <form th:action="@{/defaultBoard/}" method="get" class="row g-3">
                 <div class="col-md-3">
                     <input type="text" name="title" class="form-control" placeholder="제목 검색" th:value="${param.title}">
                 </div>
@@ -33,7 +33,7 @@
                 </div>
                 <div class="col-md-2 d-grid">
                     <button type="submit" class="btn btn-primary">검색</button>
-                    <a th:href="@{/}" class="btn btn-outline-secondary">초기화</a>
+                    <a th:href="@{/defaultBoard/}" class="btn btn-outline-secondary">초기화</a>
                 </div>
             </form>
         </div>
@@ -52,7 +52,7 @@
             <tr th:each="board : ${boardList.content}">
                 <td th:text="${board.id}"/>
                 <td>
-                    <a th:href="@{/{id}(id=${board.id})}" th:text="${board.title}">default title</a>
+                    <a th:href="@{/defaultBoard/{id}(id=${board.id})}" th:text="${board.title}">default title</a>
                 </td>
                 <td th:text="${board.author}"/>
                 <td th:text="${board.createdDate}"/>
@@ -81,19 +81,19 @@
 
             <li class="page-item" th:classappend="${start == 1} ? 'disabled'">
                 <a class="page-link"
-                   th:href="@{/(page=${start - 2}, title=${sTitle}, author=${sAuthor}, createdDate=${sDate})}">이전</a>
+                   th:href="@{/defaultBoard/(page=${start - 2}, title=${sTitle}, author=${sAuthor}, createdDate=${sDate})}">이전</a>
             </li>
 
             <li th:each="page: ${#numbers.sequence(start, end)}"
                 th:classappend="${page == current} ? 'active'" class="page-item">
                 <a class="page-link"
-                   th:href="@{/(page=${page - 1}, title=${sTitle}, author=${sAuthor}, createdDate=${sDate})}"
+                   th:href="@{/defaultBoard/(page=${page - 1}, title=${sTitle}, author=${sAuthor}, createdDate=${sDate})}"
                    th:text="${page}"></a>
             </li>
 
             <li class="page-item" th:classappend="${end == totalPages} ? 'disabled'">
                 <a class="page-link"
-                   th:href="@{/(page=${end}, title=${sTitle}, author=${sAuthor}, createdDate=${sDate})}">다음</a>
+                   th:href="@{/defaultBoard/(page=${end}, title=${sTitle}, author=${sAuthor}, createdDate=${sDate})}">다음</a>
             </li>
 
         </ul>

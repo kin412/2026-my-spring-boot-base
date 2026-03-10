@@ -21,7 +21,7 @@ import java.util.List;
 
 @Slf4j
 @Controller
-@RequestMapping("/")
+@RequestMapping("/defaultBoard")
 @RequiredArgsConstructor
 public class DefaultBoardController {
 
@@ -67,7 +67,7 @@ public class DefaultBoardController {
             log.info("errors={}", result);
             return "defaultBoard/defaultBoardForm"; // 에러가 있으면 다시 작성 화면으로
         }
-        return "redirect:/"+defaultBoardService.save(defaultBoardDto);
+        return "redirect:/defaultBoard/"+defaultBoardService.save(defaultBoardDto);
     }
 
     @GetMapping("/edit/{id}")
@@ -86,7 +86,7 @@ public class DefaultBoardController {
             return "defaultBoard/defaultBoardForm"; // 에러가 있으면 다시 작성 화면으로
         }
 
-        return "redirect:/"+defaultBoardService.update(defaultBoardDto);
+        return "redirect:/defaultBoard/"+defaultBoardService.update(defaultBoardDto);
     }
 
     @DeleteMapping("/delete/{id}")

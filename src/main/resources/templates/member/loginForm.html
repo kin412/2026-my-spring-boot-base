@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>로그인</title>
+    <style>
+        body {
+            background-color: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .login-card {
+            width: 100%;
+            max-width: 500px; /* 버튼이 옆으로 가므로 가로폭을 살짝 넓혔습니다 */
+            padding: 2.5rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            border: none;
+            border-radius: 1rem;
+        }
+        /* 입력창과 버튼의 높이를 맞추기 위한 설정 */
+        .input-group-container {
+            display: flex;
+            gap: 10px;
+        }
+        .inputs-area {
+            flex: 1;
+        }
+        .btn-login {
+            width: 100px; /* 버튼 너비 고정 */
+            font-weight: bold;
+            /* 아이디(calc) + 비번(calc) + 간격(10px) 합산 높이 */
+            height: calc(3.5rem * 2 + 10px);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card login-card bg-white">
+        <div class="card-body">
+            <h2 class="text-center mb-4 fw-bold">로그인</h2>
+
+            <form th:action="@{/}" method="post">
+                <div class="input-group-container mb-4">
+                    <div class="inputs-area">
+                        <div class="mb-2">
+                            <input type="text" class="form-control form-control-lg" style="height: 3.5rem;"
+                                   id="loginId" name="loginId" placeholder="아이디">
+                        </div>
+                        <div>
+                            <input type="password" class="form-control form-control-lg" style="height: 3.5rem;"
+                                   id="pw" name="pw" placeholder="비밀번호">
+                        </div>
+                        <div th:if="${errorMessage}" class="text-danger small mt-1" th:text="${errorMessage}">
+                            아이디 또는 비밀번호가 틀렸습니다.
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary btn-login" type="submit">로그인</button>
+                </div>
+
+                <div class="d-flex justify-content-center gap-3 small text-secondary">
+                    <a href="#" class="text-decoration-none text-muted">아이디 찾기</a>
+                    <span>|</span>
+                    <a href="#" class="text-decoration-none text-muted">비밀번호 찾기</a>
+                    <span>|</span>
+                    <a href="#" class="text-decoration-none text-muted">회원가입</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!--<script th:inline="javascript">
+        const msg = [[${errorMessage}]];
+        if (msg) {
+            alert(msg); // 브라우저 기본 팝업
+        }
+    </script>-->
+
+    <script th:inline="javascript">
+        const msg = [[${errorMessage}]];
+        if (msg) {
+            Swal.fire({
+                icon: 'error',
+                title: '로그인 실패',
+                text: msg,
+                confirmButtonText: '확인'
+            });
+        }
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const form = document.querySelector('form');
+
+            form.addEventListener('submit', function(e) {
+                const loginId = document.getElementById('loginId').value.trim();
+                const pw = document.getElementById('pw').value.trim();
+
+                if (!loginId) {
+                    alert('아이디를 입력해주세요!');
+                    document.getElementById('loginId').focus();
+                    e.preventDefault();
+                    return;
+                }
+
+                if (!pw) {
+                    alert('비밀번호를 입력해주세요!');
+                    document.getElementById('pw').focus();
+                    e.preventDefault();
+                    return;
+                }
+            });
+        });
+
+        window.onpageshow = function(event) {
+            if (event.persisted) {
+                location.href = "/";
+            }
+        };
+    </script>
+
+</body>
+</html>

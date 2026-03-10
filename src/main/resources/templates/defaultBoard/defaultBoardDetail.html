@@ -34,9 +34,9 @@
     </table>
 
     <div class="btn-container d-flex justify-content-end mt-4">
-        <button type="button" class="btn btn-primary" th:onclick="|location.href='@{/edit/{id}(id=${board.id})}'|">수정</button>
+        <button type="button" class="btn btn-primary" th:onclick="|location.href='@{/defaultBoard/edit/{id}(id=${board.id})}'|">수정</button>
         <button type="button" class="btn btn-danger ml-3" th:onclick="|deleteBoard('${board.id}')|">삭제</button>
-        <button type="button" class="btn btn-secondary ml-3" th:onclick="|location.href='/'|">목록으로</button>
+        <button type="button" class="btn btn-secondary ml-3" th:onclick="|location.href='/defaultBoard/'|">목록으로</button>
     </div>
 
 
@@ -51,7 +51,7 @@
             if (!confirm("정말로 삭제하시겠습니까?")) return;
 
             try {
-                const response = await fetch("/delete/" + boardId, {
+                const response = await fetch("/defaultBoard/delete/" + boardId, {
                     method: "DELETE"
                 });
 
@@ -59,7 +59,7 @@
                     alert("삭제되었습니다.");
                     //location.reload(); // 성공 시 새로고침
                     //location.href = "/"; // 뒤로가기 하면 캐시때문에 삭제전 글이 보임
-                    location.replace("/");
+                    location.replace("/defaultBoard/");
                 } else {
                     alert("삭제 실패!");
                 }

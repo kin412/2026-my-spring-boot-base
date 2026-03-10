@@ -9,7 +9,7 @@
 <body class="container mt-5">
     <div><h2 class="mb-5" th:text="${board.id == null} ? '새글쓰기' : '글 수정'">새글쓰기</h2></div>
 
-    <form th:action="${board.id == null} ? @{/save} : @{/update/id(id=${board.id})}"
+    <form th:action="${board.id == null} ? @{/defaultBoard/save} : @{/defaultBoard/update/id(id=${board.id})}"
           th:object="${board}" method="post">
 
         <div class="row g-0 border">
@@ -51,7 +51,7 @@
 
         <div class="btn-container d-flex justify-content-end mt-4">
             <button type="submit" class="btn btn-primary px-4">저장</button>
-            <button type="button" class="btn btn-secondary ml-3" th:onclick="|location.href='/'|">취소</button>
+            <button type="button" class="btn btn-secondary ml-3" th:onclick="|location.href='/defaultBoard/'|">취소</button>
         </div>
 
     </form>
