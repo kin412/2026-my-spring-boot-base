@@ -1,1 +1,112 @@
-ㅎㅇ
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <meta charset="UTF-8">
+    <title>게시판</title>
+</head>
+<body class="container mt-5">
+<h2 class="mb-5">게시판</h2>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        총 <span th:text="${boardList.totalElements}" class="fw-bold text-primary">0</span>건
+    </div>
+    <button type="button" class="btn btn-primary" th:onclick="|location.href='@{/defaultBoard/new}'|">새글쓰기</button>
+</div>
+
+<div class="card mb-4 bg-light">
+    <div class="card-body">
+        <form th:action="@{/board/boardList}" method="get" class="row g-3">
+            <div class="col-md-3">
+                <input type="text" name="title" class="form-control" placeholder="제목 검색" th:value="${param.title}">
+            </div>
+            <div class="col-md-3">
+                <input type="text" name="author" class="form-control" placeholder="작성자 검색" th:value="${param.author}">
+            </div>
+            <div class="col-md-4">
+                <div class="input-group">
+                    <span class="input-group-text">작성일</span>
+                    <input type="date" name="createdDate" class="form-control" th:value="${param.createdDate}">
+                </div>
+            </div>
+            <div class="col-md-2 d-grid">
+                <button type="submit" class="btn btn-primary">검색</button>
+                <a th:href="@{/board/boardList}" class="btn btn-outline-secondary">초기화</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<table class="table table-hover">
+    <thead class="table-light">
+    <tr>
+        <th>글번호</th>
+        <th>제목</th>
+        <th>작성자</th>
+        <th>작성일</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="board : ${boardList.content}">
+        <td th:text="${board.id}"/>
+        <td>
+            <a th:href="@{/defaultBoard/{id}(id=${board.id})}" th:text="${board.title}">default title</a>
+        </td>
+        <td th:text="${board.author.loginId}"/>
+        <td th:text="${board.createdDate}"/>
+    </tr>
+    </tbody>
+</table>
+
+<div th:if="${boardList.totalElements == 0}" class="text-center py-5 text-muted">
+    <h4 class="fw-light">조회 결과가 없습니다.</h4>
+</div>
+
+<nav th:if="${!boardList.isEmpty()}" aria-label="Page navigation"
+     th:with="
+        current = ${boardList.number + 1},
+        pageSize = 5,
+        totalPages = ${boardList.totalPages},
+        start = ${(current - 1) / pageSize * pageSize + 1},
+        tempEnd = ${start + pageSize - 1},
+        end = ${tempEnd > totalPages ? totalPages : tempEnd},
+
+        sTitle = ${param.title ?: ''},
+        sAuthor = ${param.author ?: ''},
+        sDate = ${param.createdDate ?: ''}
+     ">
+    <ul class="pagination justify-content-center">
+
+        <li class="page-item" th:classappend="${start == 1} ? 'disabled'">
+            <a class="page-link"
+               th:href="@{/board/boardList(page=${start - 2}, title=${sTitle}, author=${sAuthor}, createdDate=${sDate})}">이전</a>
+        </li>
+
+        <li th:each="page: ${#numbers.sequence(start, end)}"
+            th:classappend="${page == current} ? 'active'" class="page-item">
+            <a class="page-link"
+               th:href="@{/board/boardList(page=${page - 1}, title=${sTitle}, author=${sAuthor}, createdDate=${sDate})}"
+               th:text="${page}"></a>
+        </li>
+
+        <li class="page-item" th:classappend="${end == totalPages} ? 'disabled'">
+            <a class="page-link"
+               th:href="@{/board/boardList(page=${end}, title=${sTitle}, author=${sAuthor}, createdDate=${sDate})}">다음</a>
+        </li>
+
+    </ul>
+</nav>
+
+<!-- 기본은 읽기,쓰기,수정 - 동기, 삭제 - 비동기  -->
+
+<!-- 자바스크립트 파일이 큰경우는 브라우저가 먼저읽어버리면 화면이 늦게떠서 이런식으로쓴다함  -->
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+
+<script>
+
+</script>
+
+</body>
+</html>
