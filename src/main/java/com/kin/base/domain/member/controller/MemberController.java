@@ -2,6 +2,8 @@ package com.kin.base.domain.member.controller;
 
 import com.kin.base.domain.member.dto.MemberLoginDto;
 import com.kin.base.domain.member.service.MemberService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -28,10 +30,17 @@ public class MemberController {
 
     @PostMapping("/")
     public String login(@ModelAttribute MemberLoginDto memberLoginDto, Model model,
-                        RedirectAttributes redirectAttributes) {
+                        RedirectAttributes redirectAttributes, HttpServletRequest request) {
 
         try {
-            model.addAttribute("member",memberService.login(memberLoginDto));
+
+            MemberLoginDto mld = memberService.login(memberLoginDto);
+
+            //로그인 세션
+            HttpSession session = request.getSession();
+            session.setAttribute("member", mld);
+
+            return "redirect:/board/boardList";
         }catch (Exception e) {
             log.info("로그인 실패! e.getMessage() : " + e.getMessage());
             model.addAttribute("errorMessage",e.getMessage());
@@ -42,8 +51,6 @@ public class MemberController {
             return "redirect:/";
         }
 
-
-        return "redirect:/board/boardList";
     }
 
 

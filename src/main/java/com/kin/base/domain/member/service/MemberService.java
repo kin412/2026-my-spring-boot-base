@@ -12,9 +12,12 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
 
-    public Member login(MemberLoginDto memberLoginDto) {
-       return memberRepository.login(memberLoginDto.getLoginId(), memberLoginDto.getPw()).orElseThrow(
+    public MemberLoginDto login(MemberLoginDto memberLoginDto) {
+       Member member = memberRepository.login(memberLoginDto.getLoginId(), memberLoginDto.getPw()).orElseThrow(
                () -> new IllegalArgumentException("잘못된 로그인 정보 입니다!"));
+
+       return new MemberLoginDto(member);
+
     }
 
 }
