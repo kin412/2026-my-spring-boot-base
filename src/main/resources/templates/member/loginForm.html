@@ -43,16 +43,26 @@
         <div class="card-body">
             <h2 class="text-center mb-4 fw-bold">로그인</h2>
 
-            <form th:action="@{/}" method="post">
+            <form th:action="@{/}" th:object="${member}" method="post">
                 <div class="input-group-container mb-4">
                     <div class="inputs-area">
                         <div class="mb-2">
-                            <input type="text" class="form-control form-control-lg" style="height: 3.5rem;"
-                                   id="loginId" name="loginId" placeholder="아이디">
+                            <input type="text" th:field="*{loginId}"
+                                   class="form-control form-control-lg"
+                                   th:errorclass="is-invalid"
+                                   style="height: 3.5rem;" placeholder="아이디">
+                            <div class="invalid-feedback" th:errors="*{loginId}">
+                                아이디 bindingResult 오류
+                            </div>
                         </div>
                         <div>
-                            <input type="password" class="form-control form-control-lg" style="height: 3.5rem;"
-                                   id="pw" name="pw" placeholder="비밀번호">
+                            <input type="password" th:field="*{pw}"
+                                   class="form-control form-control-lg"
+                                   th:errorclass="is-invalid"
+                                   style="height: 3.5rem;" placeholder="비밀번호">
+                            <div class="invalid-feedback" th:errors="*{pw}">
+                                비밀번호 bindingResult 오류
+                            </div>
                         </div>
                         <div th:if="${errorMessage}" class="text-danger small mt-1" th:text="${errorMessage}">
                             아이디 또는 비밀번호가 틀렸습니다.

@@ -4,10 +4,12 @@ import com.kin.base.domain.member.dto.MemberLoginDto;
 import com.kin.base.domain.member.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,12 +27,22 @@ public class MemberController {
     @GetMapping("/")
     public String loginForm(Model model) {
 
+        model.addAttribute("member", new MemberLoginDto());
         return "member/loginForm";
     }
 
     @PostMapping("/")
-    public String login(@ModelAttribute MemberLoginDto memberLoginDto, Model model,
-                        RedirectAttributes redirectAttributes, HttpServletRequest request) {
+    public String login(@Valid @ModelAttribute("member") MemberLoginDto memberLoginDto
+            , BindingResult bindingResult
+            , Model model
+            , RedirectAttributes redirectAttributes
+            , HttpServletRequest request) {
+
+        // 1. 입력 값 자체에 오류가 있는 경우 (예: 아이디 미입력)
+        if (bindingResult.hasErrors()) {
+            log.info("errors={}", bindingResult);
+            return "member/loginForm"; // 에러가 있으면 다시 작성 화면으로
+        }
 
         try {
 
@@ -52,7 +64,5 @@ public class MemberController {
         }
 
     }
-
-
 
 }
