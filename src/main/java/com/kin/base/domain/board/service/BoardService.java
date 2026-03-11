@@ -3,26 +3,37 @@ package com.kin.base.domain.board.service;
 import com.kin.base.domain.board.dto.BoardDto;
 import com.kin.base.domain.board.dto.BoardSearchCondition;
 import com.kin.base.domain.board.entity.Board;
+import com.kin.base.domain.board.entity.BoardFile;
+import com.kin.base.domain.board.repository.BoardFileRepository;
 import com.kin.base.domain.board.repository.BoardRepository;
 import com.kin.base.domain.member.entity.Member;
 import com.kin.base.domain.member.repository.MemberRepository;
+import com.kin.base.global.common.FileStore;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BoardService {
 
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
+    private final FileStore fileStore;
+    private final BoardFileRepository boardFileRepository;
 
     public Page<BoardDto> findAll(Pageable pageable, BoardSearchCondition boardSearchCondition) {
 
@@ -43,7 +54,7 @@ public class BoardService {
 
     public BoardDto findById(Long id) {
 
-        Board board = boardRepository.findByIdWithAuthor(id).orElseThrow(
+        Board board = boardRepository.findByIdWithAuthorAndBoardFiles(id).orElseThrow(
                 () -> new IllegalArgumentException("잘못된 게시글 번호 입니다!")
         );
 
@@ -52,12 +63,11 @@ public class BoardService {
     }
 
     @Transactional
-    public Long save(BoardDto boardDto) {
+    public Long save(BoardDto boardDto, List<MultipartFile> boardFiles) throws IOException {
 
         Member author = memberRepository.findByLoginId(boardDto.getAuthor()).orElseThrow(
                 ()-> new IllegalArgumentException("잘못된 사용자 ID입니다." + boardDto.getAuthor())
         );
-
 
         Board board = Board.builder()
                 .type("BOARD")
@@ -67,6 +77,17 @@ public class BoardService {
 
         board.changeAuthor(author);
 
+        //첨부파일 처리
+        List<BoardFile> storeFiles = fileStore.storeFiles(boardFiles);
+
+        log.info("-=- storeFiles size : " + storeFiles.size());
+
+        //연관관계 편의 메서드로 연관관계 맺기
+        for(BoardFile boardFile : storeFiles) {
+            boardFile.changeBoard(board);
+        }
+
+        //board만 저장해도 영속성 전이 cascade.all로 file도 같이저장
         return boardRepository.save(board).getId();
 
 
@@ -79,7 +100,7 @@ public class BoardService {
                 ()-> new IllegalArgumentException("잘못된 사용자 ID입니다." + boardDto.getAuthor())
         );
 
-        Board board = boardRepository.findByIdWithAuthor(boardDto.getId()).orElseThrow(
+        Board board = boardRepository.findByIdWithAuthorAndBoardFiles(boardDto.getId()).orElseThrow(
                 ()-> new IllegalArgumentException("잘못된 게시글 접근입니다."));
 
         //setter가 나쁜게 아니다. 정확한 의도가 있는 메서드를 만들어 사용하라.
@@ -96,6 +117,11 @@ public class BoardService {
 
     public void delete(Long id) {
         boardRepository.deleteById(id);
+    }
+
+    public BoardFile findFileById(Long id){
+        return boardFileRepository.findById(id).orElseThrow(
+                ()-> new IllegalArgumentException("잘못된 파일입니다."));
     }
 
 }

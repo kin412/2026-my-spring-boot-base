@@ -11,7 +11,10 @@ public interface BoardRepository extends JpaRepository<Board, Long>, BoardReposi
 
     //간단한 경우엔 @entitygraph
     //@EntityGraph(attributePaths = {"author"}) // 연관된 author를 한 번에 가져오라!
-    @Query("select b from Board b join fetch b.author where b.id = :id")
-    Optional<Board> findByIdWithAuthor(@Param("id") Long id);
+    @Query("select b from Board b " +
+            "join fetch b.author " +
+            "left join fetch b.boardFiles " +
+            "where b.id = :id")
+    Optional<Board> findByIdWithAuthorAndBoardFiles(@Param("id") Long id);
 
 }

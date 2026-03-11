@@ -22,6 +22,14 @@ spring:
       logging: slf4j
       multiline: true # 쿼리를 한 줄로 보지 않고 예쁘게 여러 줄로 보여줌
 
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 50MB
+
+file:
+  dir: C:/fileTestDir/ # 반드시 마지막에 /를 붙이기
+
 #swagger - 스웨거 역시도 운영에서는 막아둬야함.
 springdoc:
   default-consumes-media-type: application/json
