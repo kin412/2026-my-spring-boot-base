@@ -33,10 +33,28 @@ public class Board extends BaseTimeEntity {
     private Member author;
 
     @Builder
-    public Board(String content, String title, String type, Member author) {
+    public Board(String content, String title, String type) {
         this.content = content;
         this.title = title;
         this.type = type;
-        this.author = author;
     }
+
+    //setter가 나쁜게 아니다. 정확한 의도가 있는 메서드를 만들어 사용하라.
+    public void updateBoard(String content, String title, String type) {
+        this.content = content;
+        this.title = title;
+        this.type = type;
+    }
+
+    //연관관계 편의 메서드
+    public void changeAuthor(Member author) {
+        this.author = author;
+
+        if (author != null && !author.getBoards().contains(this)) {
+            author.getBoards().add(this);
+        }
+
+    }
+
+
 }

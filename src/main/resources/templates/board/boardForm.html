@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <meta charset="UTF-8">
+    <title th:text="${formMode == 'new'} ? '새글쓰기' : '글 수정'">새글쓰기</title>
+</head>
+<body class="container mt-5">
+    <div><h2 class="mb-5" th:text="${formMode == 'new'} ? '새글쓰기' : '글 수정'">새글쓰기</h2></div>
+
+    <form th:action="${formMode == 'new'} ? @{/board/save} : @{/board/update/id(id=${board.id})}"
+          th:object="${board}" method="post">
+
+        <div class="row g-0 border">
+            <div class="col-8 border-end p-2 bg-light text-center fw-bold">제목</div>
+            <div class="col-4 p-2 bg-light text-center fw-bold">작성자</div>
+        </div>
+
+        <div class="row g-0 border border-top-0">
+            <div class="col-8 border-end p-2">
+                <input type="text"
+                       class="form-control"
+                       th:field="*{title}"
+                       placeholder="제목을 입력하세요">
+                <p th:if="${#fields.hasErrors('title')}" th:errors="*{title}" style="color:red;"></p>
+            </div>
+
+            <div class="col-4 p-2 text-center">
+                <input type="text"
+                       class="form-control text-center"
+                       th:field="*{author}"
+                       th:readonly="*{author != null}"
+                       placeholder="작성자">
+                <p th:if="${#fields.hasErrors('author')}" th:errors="*{author}" style="color:red;"></p>
+            </div>
+        </div>
+
+        <div class="row g-0 border border-top-0">
+            <div class="col-3 border-end p-2 bg-light text-center fw-bold d-flex align-items-center justify-content-center">
+                내용
+            </div>
+            <div class="col-9 p-2">
+            <textarea class="form-control border-0"
+                      rows="15"
+                      style="resize: none; min-height: 300px;"
+                      th:field="*{content}"
+                      placeholder="내용을 입력하세요"></textarea>
+                <p th:if="${#fields.hasErrors('content')}" th:errors="*{content}" style="color:red;"></p>
+            </div>
+        </div>
+
+        <div class="btn-container d-flex justify-content-end mt-4">
+            <button type="submit" class="btn btn-primary px-4">저장</button>
+            <button type="button" class="btn btn-secondary ml-3" th:onclick="|location.href='/board/boardList'|">취소</button>
+        </div>
+
+    </form>
+
+
+    <!-- 기본은 읽기,쓰기,수정 - 동기, 삭제 - 비동기  -->
+
+    <!-- 자바스크립트 파일이 큰경우는 브라우저가 먼저읽어버리면 화면이 늦게떠서 이런식으로쓴다함  -->
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+
+    <script>
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const form = document.querySelector('form'); // 또는 id가 있다면 #boardForm
+
+            form.addEventListener('submit', function(e) {
+                // 1. 값 가져오기 (th:field로 생성된 id 사용)
+                const title = document.getElementById('title').value.trim();
+                const author = document.getElementById('author').value.trim();
+                const content = document.getElementById('content').value.trim();
+
+                // 2. 제목 체크
+                if (!title) {
+                    alert('제목을 입력해주세요!');
+                    document.getElementById('title').focus();
+                    e.preventDefault(); // 서버 전송 중단
+                    return false;
+                }
+
+                // 3. 작성자 체크
+                if (!author) {
+                    alert('작성자를 입력해주세요!');
+                    document.getElementById('author').focus();
+                    e.preventDefault();
+                    return false;
+                }
+
+                // 4. 내용 체크
+                if (!content) {
+                    alert('내용을 입력해주세요!');
+                    document.getElementById('content').focus();
+                    e.preventDefault();
+                    return false;
+                }
+            });
+        });
+
+        //bindingresult 적용후 부터 안됨
+        // 페이지가 캐시에서 로드되었는지 확인 (뒤로가기 체크)
+        window.onpageshow = function(event) {
+            if (event.persisted) {
+                // 뒤로가기로 왔다면 새로고침하거나 목록으로 튕겨버림
+                location.href = "/";
+
+                //reload해서 폼만 초기화
+                //location.reload();
+            }
+        };
+    </script>
+
+</body>
+</html>

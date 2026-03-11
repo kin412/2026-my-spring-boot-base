@@ -65,4 +65,16 @@ public class MemberController {
 
     }
 
+    @PostMapping("/logout")
+    public String logout(HttpServletRequest request) {
+        // 세션이 있으면 가져오고 없으면 null 반환 (false 옵션)
+        HttpSession session = request.getSession(false);
+
+        if (session != null) {
+            session.invalidate(); // 세션 전체를 무효화 (데이터 삭제)
+        }
+
+        return "redirect:/"; // 로그아웃 후 다시 로그인 페이지나 메인으로 이동
+    }
+
 }
