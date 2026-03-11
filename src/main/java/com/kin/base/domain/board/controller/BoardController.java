@@ -5,6 +5,7 @@ import com.kin.base.domain.board.dto.BoardSearchCondition;
 import com.kin.base.domain.board.repository.BoardRepository;
 import com.kin.base.domain.board.service.BoardService;
 import com.kin.base.domain.member.dto.MemberLoginDto;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +22,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
+@Tag(name = "Board", description = "게시판 관련 API") // 컨트롤러 그룹화
 @Slf4j
 @Controller
 @RequiredArgsConstructor
