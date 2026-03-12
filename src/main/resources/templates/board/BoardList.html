@@ -182,6 +182,7 @@
             } else {
                 const errMsg = await response.text();
                 alert("삭제 실패!");
+                console.log("errMsg : " + errMsg);
             }
         } catch (error) {
             console.error("에러 발생:", error);

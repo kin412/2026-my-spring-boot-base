@@ -193,14 +193,17 @@ public class BoardService {
         //지워질 파일 목록 미리 가져오기. 스프링데이터jpa 쿼리 메소드
         List<BoardFile> deleteFiles = boardFileRepository.findByBoardIdIn(ids);
 
-        boardRepository.deleteAllByIdInBatch(ids);
+        //deleteAllByIdInBatch - cascade 설정을 무시함. 의미가 없음. 자식이 살아있는데 부모를 죽이니 참조하는 곳이 있다며 안된다고 함.
+        //boardRepository.deleteAllByIdInBatch(ids);
+
+        //cascade를 적용하려면 이쪽으로
+        boardRepository.deleteAllById(ids);
 
         String fileFullName = "";
 
         for(BoardFile file : deleteFiles){
             if(file.getSaveName() != null) {
-                fileFullName = fileStore.getFullPath(file.getSaveName());
-                fileStore.deleteRealFile(fileFullName);
+                fileStore.deleteRealFile(file.getSaveName());
             }
 
         }
