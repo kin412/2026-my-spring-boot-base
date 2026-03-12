@@ -23,7 +23,11 @@
     <div>
         총 <span th:text="${boardList.totalElements}" class="fw-bold text-primary">0</span>건
     </div>
-    <button type="button" class="btn btn-primary" th:onclick="|location.href='@{/board/new}'|">새글쓰기</button>
+    <div class="d-flex">
+        <button th:if="${member != null && member.loginId == 'admin'}" type="button"
+                class="btn btn-danger" th:onclick="adminSelectDel()">선택한 글 삭제</button>
+        <button type="button" class="btn btn-primary ml-2" th:onclick="|location.href='@{/board/new}'|">새글쓰기</button>
+    </div>
 </div>
 
 <div class="card mb-4 bg-light">
@@ -52,6 +56,7 @@
 <table class="table table-hover">
     <thead class="table-light">
     <tr>
+        <th th:if="${member != null && member.loginId == 'admin'}"><input type="checkbox" id="allCheck"></th>
         <th>글번호</th>
         <th>제목</th>
         <th>작성자</th>
@@ -60,6 +65,9 @@
     </thead>
     <tbody>
     <tr th:each="board : ${boardList.content}">
+        <td th:if="${member != null && member.loginId == 'admin'}">
+            <input type="checkbox" name="selectedBoardIds" th:value="${board.id}" class="board-checkbox">
+        </td>
         <td th:text="${board.id}"/>
         <td>
             <a th:href="@{/board/{id}(id=${board.id})}" th:text="${board.title}">default title</a>
@@ -119,6 +127,68 @@
     if (msg) {
         alert(msg); // 브라우저 기본 팝업
     }
+
+    const allCheck = document.getElementById("allCheck");
+    const boardCheckboxes = document.querySelectorAll('.board-checkbox')
+
+    allCheck.addEventListener('change', function(){
+        const isChecked = allCheck.checked;
+
+        boardCheckboxes.forEach(checkbox => {
+           checkbox.checked = isChecked;
+        });
+    });
+
+    boardCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            // 체크된 박스 개수와 전체 박스 개수를 비교
+            const checkedCount = document.querySelectorAll('.board-checkbox:checked').length;
+            const totalCount = boardCheckboxes.length;
+
+            // 모두 체크되어 있다면 전체 선택 박스도 체크, 하나라도 비어있으면 해제
+            allCheck.checked = (checkedCount === totalCount);
+        });
+    });
+
+    // Fetch API
+    async function adminSelectDel() {
+
+        const checkeBoxes = document.querySelectorAll('.board-checkbox:checked');
+
+        if (checkeBoxes.length === 0) {
+            alert("삭제할 게시글을 선택해주세요.");
+            return;
+        }
+
+        if (!confirm("정말로 삭제하시겠습니까?")) return;
+
+        // 체크된 요소들의 value(ID)만 뽑아서 배열로 만들기
+        const selectedIds = Array.from(checkeBoxes).map(box => box.value);
+
+        try {
+            const response = await fetch("/boardApi/adminSelectDel", {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(selectedIds)
+            });
+
+            if (response.ok) {
+                alert("삭제되었습니다.");
+                //location.reload(); // 성공 시 새로고침
+                //location.href = "/"; // 뒤로가기 하면 캐시때문에 삭제전 글이 보임
+                location.replace("/board/boardList");
+            } else {
+                const errMsg = await response.text();
+                alert("삭제 실패!");
+            }
+        } catch (error) {
+            console.error("에러 발생:", error);
+            alert("네트워크 오류가 발생했습니다.");
+        }
+    }
+
 </script>
 
 <script>

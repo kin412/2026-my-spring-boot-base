@@ -187,4 +187,25 @@ public class BoardService {
         boardFileRepository.deleteById(id);
     }
 
+    @Transactional
+    public void deleteMultiple(List<Long> ids){
+
+        //지워질 파일 목록 미리 가져오기. 스프링데이터jpa 쿼리 메소드
+        List<BoardFile> deleteFiles = boardFileRepository.findByBoardIdIn(ids);
+
+        boardRepository.deleteAllByIdInBatch(ids);
+
+        String fileFullName = "";
+
+        for(BoardFile file : deleteFiles){
+            if(file.getSaveName() != null) {
+                fileFullName = fileStore.getFullPath(file.getSaveName());
+                fileStore.deleteRealFile(fileFullName);
+            }
+
+        }
+
+
+    }
+
 }

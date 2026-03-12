@@ -208,6 +208,8 @@ public class BoardController {
                 .body(resource);
     }
 
+
+
     /*@DeleteMapping("/deleteFile/{id}")
     public ResponseEntity<String> deleteFile(@PathVariable Long id){
         log.info("-=- deletefile id : " + id);
