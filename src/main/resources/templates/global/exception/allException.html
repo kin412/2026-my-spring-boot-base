@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>시스템 오류 발생</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 flex items-center justify-center min-h-screen p-6">
+
+<div class="max-w-md w-full bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+    <div class="bg-red-50 p-8 flex justify-center">
+        <div class="bg-red-100 rounded-full p-4">
+            <svg class="w-12 h-12 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+            </svg>
+        </div>
+    </div>
+
+    <div class="p-8 text-center">
+        <h1 class="text-2xl font-bold text-gray-800 mb-2" th:text="${body.error}">서버 내부 오류</h1>
+        <p class="text-gray-600 mb-6" th:text="${body.message}">알 수 없는 오류가 발생했습니다.</p>
+
+        <div class="bg-gray-50 rounded-lg p-4 text-sm text-left mb-6 border border-gray-200">
+            <div class="flex justify-between mb-2">
+                <span class="text-gray-400">상태 코드</span>
+                <span class="font-mono text-red-600 font-semibold" th:text="${body.status}">500</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-gray-400">발생 시각</span>
+                <span class="text-gray-500" th:text="${#temporals.format(body.timestamp, 'yyyy-MM-dd HH:mm:ss')}">2026-03-12 00:00:00</span>
+            </div>
+        </div>
+
+        <div class="space-y-3">
+            <a href="/board/boardList" class="block w-full py-3 bg-gray-800 hover:bg-gray-900 text-white font-semibold rounded-xl transition duration-200">
+                홈으로 이동
+            </a>
+            <button onclick="history.back()" class="block w-full py-3 bg-white hover:bg-gray-100 text-gray-600 font-semibold rounded-xl border border-gray-200 transition duration-200">
+                이전 페이지로
+            </button>
+        </div>
+    </div>
+
+    <div class="bg-gray-50 py-4 px-8 border-t border-gray-100 text-center">
+        <p class="text-xs text-gray-400">Copyright © 2026 KIN-Base. All rights reserved.</p>
+    </div>
+</div>
+
+</body>
+</html>
