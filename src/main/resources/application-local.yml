@@ -5,6 +5,11 @@ spring:
     password:
     driver-class-name: org.h2.Driver
 
+  jpa:
+    properties:
+      hibernate:
+        default_batch_fetch_size: 100
+
   # 타임리프 캐시 끄기 (운영 시에는 true로 바꿔야 함)
   thymeleaf:
     cache: false
