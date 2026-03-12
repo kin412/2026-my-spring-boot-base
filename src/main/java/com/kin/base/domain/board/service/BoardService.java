@@ -75,6 +75,9 @@ public class BoardService {
                 .content(boardDto.getContent())
                 .build();
 
+        //해주는게 무결성 유지에 좋음. 지금은 board 인서트 시 author가 있어야 인서트가 되기때문에 필요하다.
+        //member author를 db에 무슨작업을 하지 않을 거라면 그냥 author를 board에 넣어주기만 해도됨.
+        //하지만 이렇게 연관관계 편의 메서드를 쓴다는 것 자체는 다른데서도 많이 쓴다는 얘기이므로 메서드 자체는 필요하다.
         board.changeAuthor(author);
 
         //첨부파일 처리
@@ -94,34 +97,94 @@ public class BoardService {
     }
 
     @Transactional
-    public Long update(BoardDto boardDto) {
+    public Long update(BoardDto boardDto, List<MultipartFile> boardFiles, List<Long> deleteFileIds) throws IOException {
 
-        Member author = memberRepository.findByLoginId(boardDto.getAuthor()).orElseThrow(
+        // 업데이트할때 작성자는 업데이트 안할거니까
+        /*Member author = memberRepository.findByLoginId(boardDto.getAuthor()).orElseThrow(
                 ()-> new IllegalArgumentException("잘못된 사용자 ID입니다." + boardDto.getAuthor())
-        );
+        );*/
 
         Board board = boardRepository.findByIdWithAuthorAndBoardFiles(boardDto.getId()).orElseThrow(
                 ()-> new IllegalArgumentException("잘못된 게시글 접근입니다."));
 
+        //첨부파일 처리
+        List<BoardFile> storeFiles = fileStore.storeFiles(boardFiles);
+
+        log.info("-=- storeFiles size : " + storeFiles.size());
+
+        //연관관계 편의 메서드로 연관관계 맺기
+        for(BoardFile boardFile : storeFiles) {
+            boardFile.changeBoard(board);
+        }
+
+
         //setter가 나쁜게 아니다. 정확한 의도가 있는 메서드를 만들어 사용하라.
         board.updateBoard(boardDto.getTitle(), boardDto.getContent(), "CONTENT");
 
-        //해주는게 무결성 유지에 좋음. 지금은 board 업데이트 시 author가 있어야 업데이트가 되기때문에 필요하다.
-        //member author를 db에 무슨작업을 하지 않을 거라면 그냥 author를 board에 넣어주기만 해도됨.
-        //하지만 이렇게 연관관계 편의 메서드를 쓴다는 것 자체는 다른데서도 많이 쓴다는 얘기이므로 메서드 자체는 필요하다.
-        board.changeAuthor(author);
+        // 업데이트할때 작성자는 업데이트 안할거니까
+        //board.changeAuthor(author);
 
-        return boardRepository.save(board).getId();
+        Long boardId = boardRepository.save(board).getId();
+
+        //삭제처리된 파일 삭제
+        if(deleteFileIds != null && deleteFileIds.size() > 0) {
+            //deleteFileIds.forEach(id -> log.info("삭제할 파일 ID: {}", id));
+            log.info("-=- deleteFileIds : {}", deleteFileIds);
+            //deleteFileIds.forEach(boardService::deleteFileById);
+
+            deleteFileIds.forEach(id -> {
+
+                /*BoardFile boardFile =  boardFileRepository.findById(id).orElseThrow(
+                        () -> new IllegalArgumentException("존재하지 않는 파일 ID입니다: " + id)
+                );*/
+
+                //cascade옵션을 준상태에서는 이렇게 해도 반대쪽이 살아있으므로 트랜잭션이 끝나는 시점에
+                //다시 살아남.
+                //boardFileRepository.deleteById(id);
+
+
+                board.getBoardFiles().stream()
+                        .filter(boardFile -> boardFile.getId().equals(id)).findFirst()
+                        .ifPresent(file -> {
+
+                            // 2. 부모 리스트에서 제거 (삭제의 핵심)
+                            board.getBoardFiles().remove(file);
+
+                            // 3. 자식 객체에서도 부모 참조 제거 (완벽한 관계 단절)
+                            file.changeBoard(null);
+
+                            //물리 파일 삭제
+                            fileStore.deleteRealFile(file.getSaveName());
+                        });
+
+            });
+        }
+
+        return boardId;
 
     }
 
     public void delete(Long id) {
+
+        Board board = boardRepository.findByIdWithAuthorAndBoardFiles(id).orElseThrow(
+                () -> new IllegalArgumentException("잘못된 게시글 접근입니다.")
+        );
+
+        board.getBoardFiles().stream().forEach(boardFile -> {
+            fileStore.deleteRealFile(boardFile.getSaveName());
+        });
+
         boardRepository.deleteById(id);
+
     }
 
     public BoardFile findFileById(Long id){
         return boardFileRepository.findById(id).orElseThrow(
                 ()-> new IllegalArgumentException("잘못된 파일입니다."));
+    }
+
+    public void deleteFileById(Long id){
+        boardFileRepository.deleteById(id);
     }
 
 }

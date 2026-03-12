@@ -160,14 +160,16 @@ public class BoardController {
     @PostMapping("/update/{id}")
     public String updateBoard(@Valid @ModelAttribute("board") BoardDto boardDto
             , BindingResult bindingResult
-            ,Model model){
+            , @RequestParam(value="deleteFileIds" , required = false) List<Long> deleteFileIds
+            , @RequestParam(value="boardFiles" , required = false) List<MultipartFile> boardFiles
+            ,Model model) throws IOException {
 
         if(bindingResult.hasErrors()) {
             log.info("errors={}", bindingResult);
             return "board/boardForm";
         }
 
-        return "redirect:/board/"+boardService.update(boardDto);
+        return "redirect:/board/" + boardService.update(boardDto, boardFiles, deleteFileIds);
 
     }
 
@@ -205,5 +207,14 @@ public class BoardController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
                 .body(resource);
     }
+
+    /*@DeleteMapping("/deleteFile/{id}")
+    public ResponseEntity<String> deleteFile(@PathVariable Long id){
+        log.info("-=- deletefile id : " + id);
+
+        boardService.deleteFileById(id);
+
+        return ResponseEntity.ok("ok");
+    }*/
 
 }

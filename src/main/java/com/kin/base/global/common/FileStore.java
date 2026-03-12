@@ -68,4 +68,12 @@ public class FileStore {
         return originalFilename.substring(pos + 1);
     }
 
+    public void deleteRealFile(String saveName) {
+        String fullPath = getFullPath(saveName);
+        File file = new File(fullPath);
+        if (file.exists()) {
+            file.delete();
+        }
+    }
+
 }

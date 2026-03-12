@@ -54,7 +54,27 @@
             <div class="col-3 border-end p-2 bg-light text-center fw-bold d-flex align-items-center justify-content-center">
                 첨부파일
             </div>
-            <div class="col-9 p-3"> <input type="file"
+
+            <div class="col-9 p-3">
+
+                <div th:if="${formMode == 'update' && !board.fileList.isEmpty()}" class="mb-3">
+                    <p class="fw-bold mb-1">기존 파일:</p>
+                    <ul class="list-unstyled">
+                        <li th:each="file : ${board.fileList}" th:id="'file-row-' + ${file.id}" class="mb-2">
+                            <span th:text="${file.originName}">파일명.jpg</span>
+
+                            <button type="button"
+                                    class="btn btn-sm btn-outline-danger ms-2"
+                                    th:data-id="${file.id}"
+                                    onclick="addDeleteFile(this)">
+                                삭제
+                            </button>
+                        </li>
+                    </ul>
+                    <div id="delete-file-ids-container"></div>
+                </div>
+
+                <input type="file"
                                            name="boardFiles"
                                            id="boardFiles"
                                            class="form-control"
@@ -78,6 +98,45 @@
     <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 
     <script>
+
+        // Fetch API
+        async function addDeleteFile(button) {
+
+            if (!confirm("정말로 삭제하시겠습니까?")) return;
+
+            let fileId = button.dataset.id;
+            const row = document.getElementById('file-row-' + fileId); // 지울 <li> 태그 찾기
+            if (row) row.remove();
+
+            // 서버로 넘길 hidden input 생성
+            const container = document.getElementById('delete-file-ids-container');
+            const input = document.createElement('input');
+
+            input.type = 'hidden';
+            input.name = 'deleteFileIds';
+            input.value = fileId;
+
+            container.appendChild(input);
+
+            /*try {
+                const response = await fetch("/board/deleteFile/" + fileId, {
+                    method: "DELETE"
+                });
+
+                if (response.ok) {
+                    //alert("파일이 삭제되었습니다.");
+
+                    if (row) {
+                        row.remove();
+                    }
+
+                } else {
+                    alert("파일 삭제 실패!");
+                }
+            } catch (error) {
+                console.error("에러 발생:", error);
+            }*/
+        }
 
         document.addEventListener("DOMContentLoaded", function() {
             const form = document.querySelector('form'); // 또는 id가 있다면 #boardForm
