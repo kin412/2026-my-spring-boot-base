@@ -166,7 +166,7 @@
         const selectedIds = Array.from(checkeBoxes).map(box => box.value);
 
         try {
-            const response = await fetch("/boardApi/adminSelectDel", {
+            const response = await fetch("/api/v1/boards/adminSelectDel", {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json"

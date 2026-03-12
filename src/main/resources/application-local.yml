@@ -37,6 +37,7 @@ file:
 
 #swagger - 스웨거 역시도 운영에서는 막아둬야함.
 springdoc:
+  #packages-to-scan: com.kin.base.domain.board.controller
   default-consumes-media-type: application/json
   default-produces-media-type: application/json
   swagger-ui:
