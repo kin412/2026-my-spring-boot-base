@@ -122,7 +122,8 @@ public class BoardController {
         // 1. 파일 개수 검증 (공백 파일 제외 로직 포함)
         if (boardFiles != null && boardFiles.size() > 3) {
             // 특정 필드(boardFiles)에 대한 에러 메시지 등록
-            bindingResult.rejectValue("boardFiles", "maxFiles", "첨부파일은 최대 3개까지만 업로드 가능합니다.");
+            //rejectValue - 필드에러, reject - 객체에러
+            bindingResult.reject("maxFiles", "첨부파일은 최대 3개까지만 업로드 가능합니다.");
         }
 
         if (bindingResult.hasErrors()) {
